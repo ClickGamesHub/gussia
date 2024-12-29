@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENGINE</title>
+    <style>
+        body {
+            background-color: #373737;
+            font-family: Verdana, sans-serif;
+            justify-content: flex-end;
+        }
+
+        button {
+            border-style: none;
+            border-radius: 7px;
+            font-size: medium;
+            padding: 7px;
+            font-family: Verdana, sans-serif;
+            background-color: rgb(255, 255, 255);
+        }
+        button:hover {
+            box-shadow: 0px 3px 10px #000000ba;
+        }
+
+        p,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: white;
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        #credit {
+            font-size: small;
+            color: white;
+            opacity: 0.2;
+        }
+
+        textarea {
+            font-family: Verdana, sans-serif;
+            padding-top: 10px;
+            outline: none;
+            resize: vertical;
+            overflow: auto;
+            border-radius: 7px;
+        }
+
+        input {
+            font-family: Verdana, sans-serif;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            text-align: center;
+            border: hidden;
+            border-radius: 7px;
+        }
+    </style>
+</head>
+    <body id='main'>
+        <script>
+            //CLICKHUB ENGINE CLICKHUB ENGINE CLICKHUB ENGINE
+            // VERSION 2.2
+            main = document.getElementById("main");
+
+            const utils = {
+                toHex: (n) => {
+                    var hex = n.toString(16);
+                    return hex.length == 1 ? "0" + hex : hex;
+                },
+                cssToHex: (rgb) => {
+                    return !rgb.startsWith("rgb")
+                        ? rgb
+                        : rgb
+                            .match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
+                            .slice(1)
+                            .map((n) => parseInt(n, 10).toString(16).padStart(2, "0"))
+                            .join("");
+                },
+
+                rgb: (r, g, b) => "#" + utils.toHex(r) + utils.toHex(g) + utils.toHex(b),
+                hex: (color) => (color[0] != "#" ? "#" + color : color),
+
+                random: (min, max) => Math.floor(Math.random() * (max - min + 1) + min),
+            };
+
+            const page = Object.create(null, {
+                background: {
+                    get() {
+                        return utils.cssToHex(document.body.style.backgroundColor);
+                    },
+                    set(color) {
+                        document.body.style.backgroundColor = color;
+                    },
+                    enumerable: true,
+                },
+                getBackground: {
+                    value: function () {
+                        return this.background;
+                    },
+                    enumerable: true,
+                },
+                setBackground: {
+                    value: function (color) {
+                        this.background = color;
+                    },
+                    enumerable: true,
+                },
+
+                title: {
+                    get() {
+                        return document.title;
+                    },
+                    set(text) {
+                        document.title = text;
+                    },
+                    enumerable: true,
+                },
+                getTitle: {
+                    value: function () {
+                        return this.title;
+                    },
+                    enumerable: true,
+                },
+                setTitle: {
+                    value: function (text) {
+                        this.title = text;
+                    },
+                    enumerable: true,
+                },
+            });
+
+            const lowEngine = Object.create(null, {
+                getElement: {
+                    value: function (id) {
+                        return document.getElementById(id);
+                    },
+                    enumerable: true,
+                },
+                createElement: {
+                    value: function (type, text = null) {
+                        const element = document.createElement(type);
+
+                        element.innerHTML = text;
+                        main.appendChild(element);
+
+                        return element;
+                    },
+                    enumerable: true,
+                },
+                appendButton: {
+                    value: function (obj) {
+                        Object.defineProperties(obj, {
+                            onClick: {
+                                value: function (func) {
+                                    this.element.onclick = func;
+                                    return this;
+                                },
+                                enumerable: true,
+                            },
+                        });
+                    },
+                    enumerable: true,
+                },
+                appendBackground: {
+                    value: function (obj) {
+                        Object.defineProperties(obj, {
+                            background: {
+                                get() {
+                                    return utils.cssToHex(this.element.style.background);
+                                },
+                                set(value) {
+                                    this.element.style.background = value;
+                                },
+                                enumerable: true,
+                            },
+                            getBackground: {
+                                value: function () {
+                                    return this.background;
+                                },
+                                enumerable: true,
+                            },
+                            setBackground: {
+                                value: function (color) {
+                                    this.background = color;
+                                    return this;
+                                },
+                                enumerable: true,
+                            },
+                        });
+                    },
+                    enumerable: true,
+                },
+            });
+
+            const engine = Object.create(lowEngine, {
+                createDefault: {
+                    value: function (type, text) {
+                        buttonElement = lowEngine.createElement(type, text);
+
+                        outputDefault = Object.create(engine, {
+                            element: {
+                                value: buttonElement,
+                            },
+
+                            color: {
+                                get() {
+                                    console.log(this.element.style.color);
+                                    return utils.cssToHex(this.element.style.color);
+                                },
+                                set(value) {
+                                    this.element.style.color = value;
+                                },
+                                enumerable: true,
+                            },
+                            getColor: {
+                                value: function () {
+                                    return this.color;
+                                },
+                                enumerable: true,
+                            },
+                            setColor: {
+                                value: function (color) {
+                                    this.color = color;
+                                    return this;
+                                },
+                                enumerable: true,
+                            },
+
+                            text: {
+                                get() {
+                                    return this.element.innerHTML;
+                                },
+                                set(value) {
+                                    this.element.innerHTML = value;
+                                },
+                                enumerable: true,
+                            },
+                            getText: {
+                                value: function (text) {
+                                    return this.text;
+                                },
+                                enumerable: true,
+                            },
+                            setText: {
+                                value: function (text) {
+                                    this.text = text;
+                                    return this;
+                                },
+                                enumerable: true,
+                            },
+
+                            moveTo: {
+                                value: function (beforeElement) {
+                                    main.insertBefore(this.element, beforeElement.element);
+                                    return this;
+                                },
+                                enumerable: true,
+                            },
+
+                            visible: {
+                                get() {
+                                    return this.element.style.display != "none";
+                                },
+                                set(value) {
+                                    this.element.style.display = value ? "" : "none";
+                                },
+                                enumerable: true,
+                            },
+                            show: {
+                                value: function () {
+                                    this.visible = true;
+                                },
+                                enumerable: true,
+                            },
+                            hide: {
+                                value: function () {
+                                    this.visible = false;
+                                },
+                                enumerable: true,
+                            },
+
+                            delete: {
+                                value: function () {
+                                    main.removeChild(this.element);
+                                },
+                                enumerable: true,
+                            },
+                        });
+
+                        return outputDefault;
+                    },
+                },
+                createHeader: {
+                    value: function (text) {
+                        outputHeader = engine.createDefault("h1", text);
+                        return outputHeader;
+                    },
+                    enumerable: true,
+                },
+                createText: {
+                    value: function (text) {
+                        outputText = engine.createDefault("p", text);
+                        return outputText;
+                    },
+                    enumerable: true,
+                },
+                createButton: {
+                    value: function (text) {
+                        outputButton = engine.createDefault("button", text);
+                        lowEngine.appendButton(outputButton);
+                        lowEngine.appendBackground(outputButton);
+
+                        return outputButton;
+                    },
+                    enumerable: true,
+                },
+                space: {
+                    value: function (amount) {
+                        divSpace = document.createElement("div");
+
+                        for (let i = 0; i < amount; i++) {
+                            divSpace.appendChild(document.createElement("br"));
+                        }
+
+                        main.appendChild(divSpace);
+                        return divSpace;
+                    },
+                    enumerable: true,
+                },
+            });
+
+            engine.createInput = Object.create(engine, {
+                default: {
+                    value: function (type) {
+                        inputDefault = engine.createDefault("input");
+                        inputDefault.element.type = type;
+
+                        return inputDefault;
+                    },
+                    enumerable: false,
+                },
+                text: {
+                    value: function () {
+                        inputText = engine.createInput.default("text");
+                        lowEngine.appendBackground(inputText);
+
+                        Object.defineProperties(inputText, {
+                            value: {
+                                get() {
+                                    return this.element.value;
+                                },
+                                set(value) {
+                                    this.element.value = value;
+                                },
+                            },
+                            getValue: {
+                                value: function () {
+                                    return this.value;
+                                },
+                                enumerable: true,
+                            },
+                            setValue: {
+                                value: function (value) {
+                                    this.value = value;
+                                    return value;
+                                },
+                                enumerable: true,
+                            },
+                        });
+
+                        inputText.getValue = function () {
+                            return this.element.value;
+                        };
+                        inputText.setValue = function (value) {
+                            this.element.value = value;
+                            return value;
+                        };
+
+                        return inputText;
+                    },
+                    enumerable: true,
+                },
+                button: {
+                    value: function (text) {
+                        inputButton = engine.createInput.default("button");
+                        inputButton.element.value = text;
+
+                        lowEngine.appendButton(inputButton);
+                        lowEngine.appendBackground(inputButton);
+
+                        return inputButton;
+                    },
+                    enumerable: true,
+                },
+            });
+        </script>
+        <script>
+            // GUSSIA SIMULATOR V1
+            // CREATED BY GUSOGUS GAMES
+            // POWERED BY CLICKHUB ENGINE 2.2
+
+
+            // Utilities
+
+            function copy(value) {
+            return JSON.parse(JSON.stringify(value))
+            }
+            function cutString(string, start, end) {
+            return string.substring(start, string.length - end);
+            }
+
+            function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+            function setSaveData(index, value) {
+            saveData[index] = value;
+            document.cookie = `${saveNames[index]}=${value}`;
+            }
+
+            function checkCondition(cond) {
+            var less = cond.less;
+            var more = cond.more;
+            var equals = cond.equals;
+            var value = cond.value;
+            var compare = stats[cond.compare].value;
+
+            return (compare < value) == less || (compare > value) == more || (compare == value) == equals;
+            }
+            function abstractAction(value, newValue, action) {
+            switch(action) {
+                default: return value;
+                case "=": return newValue;
+                case "+": return value + newValue;
+                case "-": return value - newValue;
+                case "*": return value * newValue;
+                case "/": return value / newValue;
+                case "^": return value ^ newValue;
+            }
+            }
+
+            function tryDeleteElement(element) {
+            if(element.delete != undefined) element.delete();
+            else if(element.remove != undefined) element.remove();
+            }
+
+            const create = {
+            transparentButton: function(text, color, func) {
+                var output = create.button(text, color, colors.empty, true, func);
+                return output;
+            },
+
+            transparentText: function(text, color) {
+                var output = create.transparentButton(text, color);
+                return output;
+            },
+
+            xSpace: function(amount) {
+                var output = create.transparentButton(" ".repeat(amount), colors.empty);
+                return output;
+            },
+
+            text: function(text, fg) {
+                var output = engine.createText(text);
+                output.color = fg;
+
+                return output;
+            },
+
+            button: function(text, fg, bg, isInput, func) {
+                var output = isInput ? engine.createInput.button(text) : engine.createButton(text);
+                output.color = fg;
+                output.background = bg;
+                output.onClick(func);
+                output.initFg = fg;
+                output.initBg = bg;
+
+                return output;
+            },
+
+            template: {
+                accentText: function(text) {
+                return create.text(text, colors.accent);
+                },
+
+                actionButton: function(text, fg, bg, func) {
+                var output = create.button(text, fg, bg, false, () => {
+                    statsPrevious = copy(stats);
+                    stats[statVars.turn].value++;
+
+                    var effect = events[activeEvent].effect;
+                    if(effect != undefined) {
+                    eventTurns -= 1;
+                    if(eventTurns == 0) {
+                        activeEvent = eventVars.nothing;
+                        randomEventTurn = undefined;
+                    }
+                    
+                    stats[effect.stat].value = abstractAction(stats[effect.stat].value, effect.value, effect.action);
+                    }
+                    randomEventTurn = randomEventTurn == undefined ? utils.random(7, 10) : randomEventTurn
+                    if(stats[statVars.turn].value % randomEventTurn == 0) startRandomEvent();
+                    func();
+
+                    if(checkGameOver() == 0) {
+                    update();
+                    if(stats[statVars.turn].value == 60 && settings[settingVars.difficulty] > 0 && !saveData[saveVars.extendedModes]) {
+                        setSaveData(saveVars.extendedModes, true);
+                        alert("60 ход: Разблокирован хардмод и читы!");
+                    }
+                    }
+                });
+                actionButtons[actionButtons.length] = elements.length;
+                return output;
+                },
+
+                menuButton: function(text, fg, bg, func, name) {
+                var output = create.button(text, fg, bg, false, () => { func(); });
+                menuVars[name] = menuElements.length;
+                menuButtons[menuButtons.length] = output;
+                return output;
+                },
+            }
+            };
+
+            function consoleDebugFunc() { // Console cheat
+            stats[statVars.balance].value = 1000000;
+            stats[statVars.economy].value = 70000;
+            stats[statVars.stability].value = 100;
+            stats[statVars.activity].value = 100;
+            }
+
+
+            // Data
+
+            const colors = {
+            white: utils.hex("FAFAFA"),
+            gray: utils.hex("30303E"),
+            black: utils.hex("1D1E21"),
+
+            empty: utils.hex("00000000"),
+
+            red: utils.hex("E05425"),
+            green: utils.hex("98EA33"),
+            blue: utils.hex("5D5DC1"),
+
+            bg: utils.hex("30303E"),
+            accent: utils.hex("5D5DC1"),
+            darkAccent: utils.hex("434389"),
+            secondary: utils.hex("E05425"),
+            };
+
+            const stats = [
+            { name: "Казна", value: 8000, symbol: "Г", gameOver: true },
+            { name: "Экономика", value: 70000, symbol: "Г", gameOver: true },
+            { name: "Налоги", value: 250, symbol: "Г", gameOver: false, min: 0 },
+            { name: "Стабильность", value: 85, symbol: "%", gameOver: true, max: 100 },
+            { name: "Активность", value: 60, symbol: "%", gameOver: true, max: 100 },
+            { name: "Ход", value: 0, symbol: "", gameOver: false },
+            ];
+            var statsPrevious = [];
+            const statVars = {
+            balance: 0,
+            economy: 1,
+            taxes: 2,
+            stability: 3,
+            activity: 4,
+            turn: 5,
+            };
+            var statTexts = new Array(stats.length);
+
+            const news = [
+            { text: "Здесь будут отображены новости Гуссии" },
+            { text: "Ничего не происходит" },
+            { text: "Активный заработок вызывает инфляцию",
+                cond: { less: false, more: true, equals: true, value: 160000, compare: statVars.economy } },
+            { text: "Падает активность в экономике",
+                cond: { less: true, more: false, equals: true, value: 35000, compare: statVars.economy } },
+            { text: "Люди недовольны высокими налогами",
+                cond: { less: false, more: true, equals: true, value: 400, compare: statVars.taxes } },
+            { text: "Люди радуются низким налогам",
+                cond: { less: true, more: false, equals: true, value: 100, compare: statVars.taxes } },
+            { text: "Страна находится на грани революции",
+                cond: { less: true, more: false, equals: true, value: 30, compare: statVars.stability } },
+            { text: "В стране высокая активность",
+                cond: { less: false, more: true, equals: true, value: 80, compare: statVars.activity } },
+            { text: "Всем всё равно на активность",
+                cond: { less: true, more: false, equals: true, value: 30, compare: statVars.activity } },
+            ];
+            const newsVars = {
+            start: 0,
+            nothing: 1,
+            higheconomy: 2,
+            loweconomy: 3,
+            hightaxes: 4,
+            lowtaxes: 5,
+            lowstability: 6,
+            highactivity: 7,
+            lowactivity: 8,
+            }
+
+            const events = [
+            { text: "Здесь вы узнаете о случайных событиях" },
+            { text: "Событий нету" },
+
+            {
+                text: "Начался рейд, но вся полиция не в сети и боты сломались",
+                length: 1,
+                cond: { less: true, more: true, equals: true, value: 0, compare: statVars.balance },
+                effect: { stat: statVars.balance, value: 9000, action: "-" },
+            },
+            {
+                text: "В ряды правительства пробрался компостер и чуть не крашнул сервер",
+                length: 1,
+                cond: { less: true, more: true, equals: true, value: 0, compare: statVars.balance },
+                effect: { stat: statVars.stability, value: 22, action: "-" },
+            },
+
+            {
+                text: "Кто-то нашёл новое место для пиара и успешно пропиарил сервер",
+                length: 1,
+                cond: { less: true, more: true, equals: true, value: 0, compare: statVars.balance },
+                effect: { stat: statVars.activity, value: 8, action: "+" },
+            },
+            {
+                text: "Зам. президента выступил с речью, что укрепило доверие населения",
+                length: 1,
+                cond: { less: true, more: true, equals: true, value: 0, compare: statVars.balance },
+                effect: { stat: statVars.stability, value: 10, action: "+" },
+            },
+
+
+            {
+                text: "Маркисты-социалисты недовольны большим размером государственной казны",
+                length: 4,
+                cond: { less: false, more: true, equals: true, value: 60000, compare: statVars.balance },
+                effect: { stat: statVars.balance, value: 2500, action: "-" },
+            },
+            {
+                text: "Почему-то всем стало всё равно на экономику",
+                length: 3,
+                cond: { less: false, more: true, equals: true, value: 75, compare: statVars.activity },
+                effect: { stat: statVars.economy, value: 10000, action: "-" },
+            },
+            ]
+            const eventVars = {
+            start: 0,
+            nothing: 1,
+            
+            highBalance: 2,
+            }
+            var activeEvent = eventVars.nothing;
+            var eventTurns = 0;
+
+            const achievments = [
+            { active: false, name: "Богатство", desc: "Получить 50000Г",
+                cond: { less: false, more: true, equals: true, value: 50000, compare: statVars.balance } },
+            { active: false, name: "Популярность", desc: "Достичь 100% активности",
+                cond: { less: false, more: true, equals: true, value: 100, compare: statVars.activity } },
+            { active: false, name: "Единая Гуссия", desc: "Править дольше 50 ходов",
+                cond: { less: false, more: true, equals: true, value: 50, compare: statVars.turn } },
+            { active: false, name: "Bye Dream", desc: "Дойти до 25Г в казне и выжить",
+                cond: { less: true, more: true, equals: false, value: 25, compare: statVars.balance } },
+            { active: false, name: "Бурунди", desc: "Довести население до нищеты и 1000Г в экономике",
+                cond: { less: true, more: true, equals: false, value: 1000, compare: statVars.economy } },
+            ];
+            const achievVars = {
+            rich: 0,
+            popular: 1,
+            };
+            var achievmentTexts = new Array(achievments.length);
+
+            var elements = [];
+            var actionButtons = [];
+
+            const gameOverReasons = [];
+            gameOverReasons[statVars.balance] = "Ваша партия стала банкротом.";
+            gameOverReasons[statVars.economy] = "Гуссия погрязла в нищете, правительство было свергнуто.";
+            gameOverReasons[statVars.stability] = "Население было недовольно властью, произошла революция.";
+            gameOverReasons[statVars.activity] = "Актив полностью исчез и севрер отсох.";
+
+            var settings = [
+            0,
+            false,
+            ];
+            var settingVars = {
+            difficulty: 0,
+            cheatsOn: 1,
+            }
+
+            var saveData = [
+            false,
+            ]
+            var saveNames = [
+            "extendedModes",
+            ]
+            var saveVars = {}
+
+            for(var i = 0; i < saveNames.length; i++) {
+            saveVars[saveNames[i]] = i;
+
+            var cookie = getCookie(saveNames[i]);
+            if(cookie == undefined) document.cookie = `${saveNames[i]}=${saveData[i]}`;
+            else saveData[i] = (saveData[i] == true || saveData[i] == false) ? cookie == "true" : cookie;
+            }
+
+            var hardmodeRandomIndex;
+            var randomEventTurn;
+
+
+            // Game itself
+
+            page.setBackground(colors.bg);
+            page.setTitle("Симлятор Гуссии");
+
+            var header = engine.createHeader("Симулятор Гуссии");
+
+            var firstText = create.text("Добро пожаловать!", colors.white);
+
+            var menuElements = [];
+            var menuVars = {};
+            var menuButtons = [];
+
+            var updateDiffBtCols = () => {};
+            var diffs = [
+            { helpMoney: 3500, name: "Облегчённый", desc: `Поддержка от других стран +${3500}`, func: () => { stats[statVars.balance].value += 3500; },
+                menuSetDif: () => { settings[settingVars.difficulty] = 0; updateDiffBtCols(); }, menuName: "btnEasy", menuColor: colors.accent },
+
+            { name: "Классический", desc: "Режим старых версий", func: () => {},
+                menuSetDif: () => { settings[settingVars.difficulty] = 1; updateDiffBtCols(); }, menuName: "btnClassic", menuColor: colors.accent },
+            
+            { name: "Хардмод", desc: "Случайная кнопка отключается каждые 2 хода", func: () => {
+                hardmodeRandomIndex = undefined;
+                for(var i = 0; i < actionButtons.length; i++) {
+                var element = elements[actionButtons[i]];
+                element.background = element.initBg;
+                element.color = element.initFg;
+                }
+                if(stats[statVars.turn].value % 2 == 0) {
+                hardmodeRandomIndex = utils.random(0, actionButtons.length - 1);
+                var element = elements[actionButtons[hardmodeRandomIndex]];
+                element.background = colors.gray;
+                element.color = colors.white;
+                }
+            },
+                menuSetDif: () => {
+                if(saveData[saveVars.extendedModes]) {
+                    settings[settingVars.difficulty] = 2; updateDiffBtCols();
+                } else alert("Чтобы разблокировать хардмод, проживите 60 ходов в классическом режиме.");
+                }, menuName: "btnHardmode", menuColor: colors.red
+            },
+            ];
+            var diffVars = {
+            easy: 0,
+            classic: 1,
+            hardmode: 2,
+            };
+
+
+            function createMenuElements() {
+            updateDiffBtCols = function() {
+                for(var i = 0; i < diffs.length; i++) {
+                menuButtons[i].background = settings[settingVars.difficulty] == i ? diffs[i].menuColor : colors.gray
+                }
+            };
+
+            menuElements[menuElements.length] = create.button("Играть", colors.white, colors.darkAccent, false, () => {
+                for(var i = 0; i < menuElements.length; i++) {
+                tryDeleteElement(menuElements[i]);
+                }
+                createGameElements();
+            });
+            menuElements[menuElements.length] = engine.space(2);
+
+            for(var i = 0; i < diffs.length; i++) {
+                menuElements[menuElements.length] = create.template.menuButton(diffs[i].name, colors.white, colors.gray, diffs[i].menuSetDif,
+                diffs[i].menuName);
+                menuElements[menuElements.length] = create.transparentText(`  ${diffs[i].desc}`, colors.white);
+                menuElements[menuElements.length] = engine.space(1);
+            }
+            menuElements[menuElements.length] = engine.space(1);
+
+            menuElements[menuElements.length] = create.button("Читы", colors.white, colors.red, false, () => {
+                if(saveData[saveVars.extendedModes]) {
+                settings[settingVars.cheatsOn] = !settings[settingVars.cheatsOn]
+                alert(`Читы ${settings[settingVars.cheatsOn] ? "активированы" : "деактивированы"}.`);
+                } else alert("Чтобы разблокировать читы, проживите 60 ходов в классическом режиме.");
+            });
+            menuElements[menuElements.length] = engine.space(1);
+            menuElements[menuElements.length] = create.button("Сбросить данные", colors.white, colors.red, false, () => {
+                if(confirm("Вы уверены, что хотите сбросить сохранения игры?")) {
+                const cookies = document.cookie.split(";");
+
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i];
+                    const eqPos = cookie.indexOf("=");
+                    const name = eqPos >= 0 ? cookie.substr(0, eqPos) : cookie;
+                    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                }
+                location.reload();
+                }
+            });
+            
+            updateDiffBtCols();
+            }
+            createMenuElements();
+
+            function createGameElements() {
+            firstText.text = "- Действия -";
+            firstText.color = colors.accent;
+            
+            elements[elements.length] = create.template.actionButton("Добавить фичу", colors.white, colors.accent, () => {
+                if(hardmodeRandomIndex == 0) { customGameOver("Вы нажали на отключённую кнопку..."); return; }
+
+                stats[statVars.balance].value -= (stats[statVars.activity].value * 30) - (stats[statVars.taxes].value *
+                (Math.floor(stats[statVars.economy].value / 10000)));
+                stats[statVars.stability].value -= Math.floor(stats[statVars.taxes].value / 100);
+                stats[statVars.economy].value += (stats[statVars.activity].value * 100) + (stats[statVars.activity].value * 70);
+            
+                stats[statVars.activity].value += Math.floor(stats[statVars.stability].value / 10);
+            });
+            elements[elements.length] = create.xSpace(4);
+            elements[elements.length] = create.template.actionButton("Исправить баги", colors.accent, colors.white, () => {
+                if(hardmodeRandomIndex == 1) { customGameOver("Вы нажали на отключённую кнопку..."); return; }
+                
+                stats[statVars.balance].value -= (stats[statVars.activity].value * 20) - (stats[statVars.taxes].value *
+                (Math.floor(stats[statVars.economy].value / 10000)));
+                stats[statVars.stability].value += Math.floor(stats[statVars.activity].value / 20) - Math.floor(stats[statVars.taxes].value / 100);
+                stats[statVars.economy].value -= (stats[statVars.activity].value * 50);
+            
+                stats[statVars.activity].value -= 4;
+            });
+            elements[elements.length] = engine.space(1);
+            
+            elements[elements.length] = create.template.actionButton("Начать ивент", colors.white, colors.accent, () => {
+                if(hardmodeRandomIndex == 2) { customGameOver("Вы нажали на отключённую кнопку..."); return; }
+                
+                stats[statVars.balance].value -= (stats[statVars.activity].value * 45) - (stats[statVars.taxes].value *
+                (Math.floor(stats[statVars.economy].value / 10000)));
+                stats[statVars.stability].value -= Math.floor(stats[statVars.taxes].value / 100);
+                stats[statVars.economy].value -= (stats[statVars.activity].value * 160) - (stats[statVars.activity].value * 70);
+            
+                stats[statVars.activity].value += Math.floor(stats[statVars.stability].value / 6.6);
+            });
+            elements[elements.length] = create.xSpace(4);
+            elements[elements.length] = create.template.actionButton("Улучшить экономику", colors.accent, colors.white, () => {
+                if(hardmodeRandomIndex == 3) { customGameOver("Вы нажали на отключённую кнопку..."); return; }
+                
+                stats[statVars.balance].value -= (stats[statVars.activity].value * 40) - (stats[statVars.taxes].value *
+                (Math.floor(stats[statVars.economy].value / 10000)));
+                stats[statVars.stability].value += Math.floor(stats[statVars.activity].value / 15) - Math.floor(stats[statVars.taxes].value / 100);
+                stats[statVars.economy].value += (stats[statVars.activity].value * 120) + (stats[statVars.activity].value * 70);
+            
+                stats[statVars.activity].value -= Math.floor(stats[statVars.stability].value / 13) * Math.floor(stats[statVars.economy].value / 130000);
+            });
+            elements[elements.length] = engine.space(1);
+            
+            elements[elements.length] = create.template.actionButton("Запустить пиар", colors.white, colors.accent, () => {
+                if(hardmodeRandomIndex == 4) { customGameOver("Вы нажали на отключённую кнопку..."); return; }
+                
+                stats[statVars.balance].value -= (stats[statVars.activity].value * 70) -
+                stats[statVars.taxes].value * (Math.floor(stats[statVars.economy].value / 10000));
+                stats[statVars.stability].value -= (Math.floor(stats[statVars.taxes].value / 100) * Math.floor(stats[statVars.economy].value / 170000));
+                stats[statVars.economy].value += stats[statVars.activity].value * 70;
+            
+                stats[statVars.activity].value += 5;
+            });
+            elements[elements.length] = create.xSpace(4);
+            elements[elements.length] = create.template.actionButton("Провести голосование", colors.accent, colors.white, () => {
+                if(hardmodeRandomIndex == 5) { customGameOver("Вы нажали на отключённую кнопку..."); return; }
+                
+                stats[statVars.balance].value -= (stats[statVars.activity].value * 30) -
+                stats[statVars.taxes].value * (Math.floor(stats[statVars.economy].value / 10000));
+                stats[statVars.stability].value += Math.floor(stats[statVars.activity].value / 12) - Math.floor(stats[statVars.taxes].value / 100);
+                stats[statVars.economy].value -= stats[statVars.activity].value * 40;
+            
+                stats[statVars.activity].value -= 7;
+            });
+            
+            elements[elements.length] = engine.space(1);
+            
+            elements[elements.length] = create.template.actionButton("Бездействие", colors.white, colors.secondary, () => {
+                if(hardmodeRandomIndex == 6) { customGameOver("Вы нажали на отключённую кнопку..."); return; }
+                
+                stats[statVars.balance].value += stats[statVars.taxes].value * (Math.floor(stats[statVars.economy].value / 10000));
+                stats[statVars.stability].value -= Math.floor(stats[statVars.taxes].value / 100);
+                stats[statVars.economy].value += stats[statVars.activity].value * 70;
+            
+                stats[statVars.activity].value -= 8;
+            });
+            elements[elements.length] = engine.space(1);
+            
+            elements[elements.length] = create.template.actionButton("Повысить налоги", colors.white, colors.secondary, () => {
+                if(hardmodeRandomIndex == 7) { customGameOver("Вы нажали на отключённую кнопку..."); return; }
+                
+                stats[statVars.taxes].value += 50;
+            
+                stats[statVars.balance].value += stats[statVars.taxes].value * (Math.floor(stats[statVars.economy].value / 10000));
+                stats[statVars.stability].value -= Math.floor(stats[statVars.taxes].value / 100);
+                stats[statVars.economy].value += stats[statVars.activity].value * 70;
+            
+                stats[statVars.activity].value -= 8;
+            });
+            elements[elements.length] = create.xSpace(4);
+            elements[elements.length] = create.template.actionButton("Понизить налоги", colors.secondary, colors.white, () => {
+                if(hardmodeRandomIndex == 8) { customGameOver("Вы нажали на отключённую кнопку..."); return; }
+                
+                stats[statVars.taxes].value -= 50;
+            
+                stats[statVars.balance].value += stats[statVars.taxes].value * (Math.floor(stats[statVars.economy].value / 10000));
+                stats[statVars.stability].value -= Math.floor(stats[statVars.taxes].value / 100);
+                stats[statVars.economy].value += stats[statVars.activity].value * 70;
+            
+                stats[statVars.activity].value -= 8;
+            });
+            
+            
+            globalThis.curEvent = create.text(`[ События: ${events[eventVars.start].text} ]`, colors.accent);
+            globalThis.curNews = create.text(`[ Новости: ${news[newsVars.start].text} ]`, colors.white);
+            elements[elements.length] = engine.space(1);
+            
+            elements[elements.length] = create.text("- Статистика -", colors.accent);
+            for(var i = 0; i < stats.length; i++) {
+                statTexts[i] = create.text(`${stats[i].name}: ${stats[i].value}${stats[i].symbol}`, colors.white);
+            }
+            elements[elements.length] = engine.space(1)
+            
+            elements[elements.length] = create.text("- Достижения -", colors.secondary);
+            for(var i = 0; i < achievments.length; i++) {
+                achievmentTexts[i] = create.text(`${achievments[i].name}: ${achievments[i].desc}`, colors.white);
+            }
+            elements[elements.length] = engine.space(1)
+
+            if(settings[settingVars.cheatsOn]) {
+                elements[elements.length] = create.text("- Читы -", colors.secondary);
+                elements[elements.length] = create.template.actionButton("Добавить 1000Г", colors.white, colors.secondary, () => {
+                stats[statVars.balance].value += 1000;
+                });
+                elements[elements.length] = create.xSpace(4);
+                elements[elements.length] = create.template.actionButton("Активность 100%", colors.white, colors.secondary, () => {
+                stats[statVars.activity].value = 100;
+                });
+                elements[elements.length] = create.xSpace(4);
+                elements[elements.length] = create.template.actionButton("Стабильность 100%", colors.white, colors.secondary, () => {
+                stats[statVars.stability].value += 1000;
+                });
+                elements[elements.length] = engine.space(1);
+                elements[elements.length] = create.template.actionButton("Установить значение...", colors.white, colors.secondary, () => {
+                var statIndex = parseInt(prompt("Выберите номер статистики по порядку."));
+                console.log(statIndex);
+                if(statIndex <= 0 || statIndex > stats.length || isNaN(statIndex)) alert("Неправильный номер.");
+                else {
+                    statIndex -= 1;
+                    var newValue = parseInt(prompt("Выберите новое значение статистики."));
+                    if(newValue <= 0) alert("Нельзя выбрать значение меньшее или равное нулю.");
+                    else if(isNaN(statIndex)) alert("Неправильное значение.");
+                    else {
+                    stats[statIndex].value = newValue;
+                    }
+                }
+                });
+            }
+            }
+
+
+            function updateStats() {
+            for(var i = 0; i < stats.length; i++) {
+                if(stats[i].min != undefined && stats[i].value < stats[i].min) stats[i].value = stats[i].min;
+                if(stats[i].max != undefined && stats[i].value > stats[i].max) stats[i].value = stats[i].max;
+            }
+
+            var threshold = 1;
+            for(var i = 0; i < stats.length; i++) {
+                statTexts[i].text = `${stats[i].name}: ${stats[i].value}${stats[i].symbol}`;
+
+                if(stats[i].value > statsPrevious[i].value + threshold) statTexts[i].color = colors.green;
+                else if(stats[i].value < statsPrevious[i].value - threshold) statTexts[i].color = colors.red;
+                else statTexts[i].color = colors.white;
+            }
+            }
+            function updateEvent() {
+            curEvent.text = `[ События: ${events[activeEvent].text} ]`;
+            }
+            function updateNews() {
+            curNews.text = "[ Новости: ";
+
+            for(var i = 0; i < news.length; i++) {
+                const cond = news[i].cond;
+                if(cond == undefined || cond == null) continue;
+
+                if(checkCondition(cond)) {
+                curNews.text += (curNews.text == "[ Новости: " ? "" : ", ") + news[i].text;
+                }
+            }
+
+            curNews.text += curNews.text == "[ Новости: " ? `${news[newsVars.nothing].text} ]` : " ]";
+            }
+            function updateAchievments() {
+            for(var i = 0; i < achievments.length; i++) {
+                const cond = achievments[i].cond;
+                if(cond == undefined || cond == null) continue;
+
+                if(checkCondition(cond)) {
+                achievments[i].active = true;
+                }
+
+                if(achievments[i].active && !achievments[i].indicated) {
+                achievmentTexts[i].color = colors.green;
+                achievmentTexts[i].text += " ✔";
+                achievments[i].indicated = true;
+                }
+            }
+            }
+
+
+            function updateDefault() {
+            updateStats();
+            updateEvent();
+            updateNews();
+            updateAchievments();
+            }
+            function update() {
+            diffs[settings[settingVars.difficulty]].func();
+            updateDefault();
+            }
+
+            function startRandomEvent() {
+            console.log("ивент момент");
+            var availableEvents = [];
+            for(var i = 0; i < events.length; i++) {
+                if(events[i].effect == undefined) continue;
+                else if(!checkCondition(events[i].cond)) continue;
+                else availableEvents[availableEvents.length] = i;
+            }
+            if(availableEvents.length == 0) return;
+
+            var randomIndex = utils.random(0, availableEvents.length - 1);
+            activeEvent = availableEvents[randomIndex];
+            eventTurns = events[activeEvent].length;
+            }
+
+
+            function customGameOver(reason) {
+            for(var i = 0; i < elements.length; i++) tryDeleteElement(elements[i]);
+            for(var i = 0; i < statTexts.length; i++) tryDeleteElement(statTexts[i]);
+            for(var i = 0; i < achievmentTexts.length; i++) tryDeleteElement(achievmentTexts[i]);
+            curNews.delete();
+            curEvent.delete();
+
+            header.text = "Игра окончена!";
+            header.color = colors.red;
+            firstText.text = `${reason}   Перезагрузите для рестарта.`;
+            firstText.color = colors.white;
+            }
+            function gameOver(statIndex) {
+            customGameOver(gameOverReasons[statIndex]);
+            }
+            function checkGameOver() {
+            for(var i = 0; i < stats.length; i++) {
+                if(!stats[i].gameOver) continue;
+                else if(stats[i].value <= 0) {
+                gameOver(i);
+                return 1;
+                }
+            }
+            return 0;
+            }
+        </script>
+    </body>
+</html>
